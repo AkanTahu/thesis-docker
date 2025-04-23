@@ -7,9 +7,11 @@ volumes:
       type: none
       o: bind
       device: ./shared-storage
+
+  deepface-cache: #
 services:
   nginx:
-    image: nginx:latest
+    image: nginx:alpine
     container_name: nginx
     ports:
       - "80:80"
@@ -22,6 +24,9 @@ services:
       - backend-simple-frs
     networks:
       - app-network
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
   rekachain-web:
     build:
       context: ./rekachain-web
@@ -39,9 +44,9 @@ services:
     depends_on:
       - db
     ports:
-      - 8000:8000
+      # - 8000:8000
       - 5173:5173
-
+    
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     ports:
@@ -53,7 +58,7 @@ services:
       PMA_PASSWORD: 12345678
       PMA_ARBITRARY: 1
     depends_on:
-    - db
+      - db
     networks:
       - app-network
     volumes:
@@ -61,8 +66,8 @@ services:
 
   db:
     image: mariadb:11.6
-    ports:
-      - 3306:3306
+    # ports:
+    #   - 3306:3306
     volumes:
       - .docker/db/data:/var/lib/mysql
       - .docker/logs:/var/log/mysql
@@ -81,15 +86,15 @@ services:
       context: ./backend-simple-FRS
       dockerfile: Dockerfile
     container_name: backend-simple-frs
-    ports:
-      - "5000:5000"
+    # ports:
+    #   - "5000:5000"
     working_dir: /app/backend-simple-FRS
     volumes:
       - ./backend-simple-FRS:/app/backend-simple-FRS
       - shared-data:/shared-storage
+      - deepface-cache:/root/.deepface
     networks:
       - app-network
-
 
 networks:
   app-network:
