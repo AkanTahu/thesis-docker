@@ -1,3 +1,5 @@
 /backend-simple-FRS
 /rekachain-web
 .docker
+/shared-storage
+/.docker

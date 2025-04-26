@@ -29,7 +29,8 @@ bash:
 	winpty docker exec -it $(APP_CONTAINER) bash
 
 npm-build:
-	winpty docker exec -it rekachain-web npm run build
+	winpty docker exec -it $(APP_CONTAINER) npm install
+	winpty docker exec -it $(APP_CONTAINER) node node_modules/vite/bin/vite.js build
 
 fresh:
 	winpty docker exec -it $(APP_CONTAINER) ./wait-for-db.sh && winpty docker exec -it $(APP_CONTAINER) php artisan migrate:fresh --seed
@@ -39,9 +40,6 @@ migrate:
 
 config-clear:
 	winpty docker exec -it $(APP_CONTAINER) php artisan config:clear && winpty docker exec -it $(APP_CONTAINER) php artisan cache:clear
-
-npm-install:
-	winpty docker exec -it $(APP_CONTAINER) npm install
 
 wipe-db:
 	rm -rf ./.docker/db/data/*
@@ -81,13 +79,11 @@ rebuild-laravel:
 	docker-compose build --no-cache $(APP_CONTAINER)
 	docker-compose up -d $(APP_CONTAINER)
 	sleep 5
-	make npm-install
 	make npm-build
 	make fresh
 	make config-clear
 
 rebuild-laravel_V:
-	make npm-install
 	make npm-build
 	make fresh
 	make config-clear
@@ -106,10 +102,13 @@ rebuild-all:
 	make wipe-db
 	make rebuild
 	sleep 5
-	make npm-install
 	make npm-build
 	make fresh
 	make config-clear
+
+down-up:
+	docker compose down
+	docker compose up -d
 
 
 
