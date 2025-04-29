@@ -1,5 +1,5 @@
-APP_CONTAINER=rekachain-web
-FRS_CONTAINER=backend-simple-frs
+APP_CONTAINER=v1-thesis-wsl-rekachain-web-1
+FRS_CONTAINER=v1-thesis-wsl-backend-simple-frs-1
 
 up:
 	docker-compose up -d
@@ -26,20 +26,20 @@ rebuild-db:
 	docker-compose up -d phpmyadmin	
 
 bash:
-	winpty docker exec -it $(APP_CONTAINER) bash
+	  docker exec -it $(APP_CONTAINER) bash
 
 npm-build:
-	winpty docker exec -it $(APP_CONTAINER) npm install
-	winpty docker exec -it $(APP_CONTAINER) node node_modules/vite/bin/vite.js build
+	  docker exec -it $(APP_CONTAINER) npm install
+	  docker exec -it $(APP_CONTAINER) node node_modules/vite/bin/vite.js build
 
 fresh:
-	winpty docker exec -it $(APP_CONTAINER) ./wait-for-db.sh && winpty docker exec -it $(APP_CONTAINER) php artisan migrate:fresh --seed
+	  docker exec -it $(APP_CONTAINER) ./wait-for-db.sh &&   docker exec -it $(APP_CONTAINER) php artisan migrate:fresh --seed
 
 migrate:
-	winpty docker exec -it $(APP_CONTAINER) ./wait-for-db.sh && winpty docker exec -it $(APP_CONTAINER) php artisan migrate
+	  docker exec -it $(APP_CONTAINER) ./wait-for-db.sh &&   docker exec -it $(APP_CONTAINER) php artisan migrate
 
 config-clear:
-	winpty docker exec -it $(APP_CONTAINER) php artisan config:clear && winpty docker exec -it $(APP_CONTAINER) php artisan cache:clear
+	  docker exec -it $(APP_CONTAINER) php artisan optimize:clear
 
 wipe-db:
 	rm -rf ./.docker/db/data/*
@@ -102,6 +102,15 @@ rebuild-all:
 	make wipe-db
 	make rebuild
 	sleep 5
+	make npm-build
+	make fresh
+	make config-clear
+
+clean:
+	make wipe-db
+	docker-compose down -v
+	docker-compose build --no-cache
+	docker-compose up -d
 	make npm-build
 	make fresh
 	make config-clear
