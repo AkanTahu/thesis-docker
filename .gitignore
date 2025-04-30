@@ -3,3 +3,5 @@
 /shared-storage
 /.docker
 .docker
+.swp
+.docker/db/data/
