@@ -1,5 +1,5 @@
-APP_CONTAINER=v1-thesis-wsl-rekachain-web-1
-FRS_CONTAINER=v1-thesis-wsl-backend-simple-frs-1
+APP_CONTAINER=v3-wsl-rekachain-web
+FRS_CONTAINER=v3-wsl-backend-simple-frs
 
 up:
 	docker-compose up -d
@@ -7,7 +7,7 @@ up:
 
 build:
 	docker-compose build --no-cache
-
+	
 rebuild:
 	docker-compose down -v && docker-compose build --no-cache && docker-compose up -d
 
@@ -28,12 +28,21 @@ rebuild-db:
 bash:
 	  docker exec -it $(APP_CONTAINER) bash
 
+fix-permission:
+	chmod +x /home/akantahu/v3-thesis-wsl/.docker/rekachain-web/wait-for-db.sh
+	chmod -R 777 /home/akantahu/v3-thesis-wsl/rekachain-web/storage
+	chmod -R 777 /home/akantahu/v3-thesis-wsl/rekachain-web/bootstrap/cache
+
 npm-build:
 	  docker exec -it $(APP_CONTAINER) npm install
 	  docker exec -it $(APP_CONTAINER) node node_modules/vite/bin/vite.js build
 
 fresh:
-	  docker exec -it $(APP_CONTAINER) ./wait-for-db.sh &&   docker exec -it $(APP_CONTAINER) php artisan migrate:fresh --seed
+	  make fix-permission
+	  docker-compose exec rekachain-web composer install
+	  docker-compose exec rekachain-web cp .env.example .env
+	  docker-compose exec rekachain-web php artisan key:generate
+	  docker exec -it $(APP_CONTAINER) ./wait-for-db.sh  &&   docker exec -it $(APP_CONTAINER) php artisan migrate:fresh --seed
 
 migrate:
 	  docker exec -it $(APP_CONTAINER) ./wait-for-db.sh &&   docker exec -it $(APP_CONTAINER) php artisan migrate
@@ -83,10 +92,17 @@ rebuild-laravel:
 	make fresh
 	make config-clear
 
-rebuild-laravel_V:
+rebuild-laravel-v:
 	make npm-build
 	make fresh
 	make config-clear
+
+rebuild-fresh-v:
+	docker-compose down
+	rm -rf /home/akantahu/v3-thesis-wsl/.docker/db/data/*
+	docker-compose up -d
+	make fresh
+	make config-clear	
 	
 
 rebuild-pma:

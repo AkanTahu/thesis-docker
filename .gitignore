@@ -1,10 +1,7 @@
 /backend-simple-FRS
 /rekachain-web
 /shared-storage
-.docker/
 .swp
-.docker/db/data/
-.docker/db/data/**/*.frm
-.docker/db/data/**/*.ibd
-.docker/db/data/*.log
-.docker/db/data/*.cnf
+.docker/db/
+.docker/logs/
+.docker/phpmyadmin/sessions/
