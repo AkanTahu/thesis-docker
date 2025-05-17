@@ -6,19 +6,19 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ./shared-storage
+      device: /home/akantahu/v3-thesis-wsl/shared-storage
 
   deepface-cache: #
 services:
   nginx:
     image: nginx:alpine
-    container_name: nginx
+    container_name: v3-wsl-nginx
     ports:
       - "80:80"
     volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
-      - ./rekachain-web:/app/rekachain-web
-      - ./shared-storage:/shared-storage
+      - /home/akantahu/v3-thesis-wsl/nginx.conf:/etc/nginx/conf.d/default.conf
+      - /home/akantahu/v3-thesis-wsl/rekachain-web:/app/rekachain-web
+      - /home/akantahu/v3-thesis-wsl/shared-storage:/shared-storage
     depends_on:
       - rekachain-web
       - backend-simple-frs
@@ -27,18 +27,19 @@ services:
     dns:
       - 8.8.8.8
       - 1.1.1.1
+      
   rekachain-web:
     build:
-      context: ./rekachain-web
+      context: /home/akantahu/v3-thesis-wsl/rekachain-web
       dockerfile: Dockerfile
-    container_name: rekachain-web
+    container_name: v3-wsl-rekachain-web
     restart: unless-stopped
     tty: true
     working_dir: /app/rekachain-web
     volumes:
-      - ./rekachain-web:/app/rekachain-web
-      - shared-data:/shared-storage
-      - .docker/rekachain-web/wait-for-db.sh:/app/rekachain-web/wait-for-db.sh
+      - /home/akantahu/v3-thesis-wsl/rekachain-web:/app/rekachain-web
+      - /home/akantahu/v3-thesis-wsl/shared-storage:/shared-storage
+      - /home/akantahu/v3-thesis-wsl/.docker/rekachain-web/wait-for-db.sh:/app/rekachain-web/wait-for-db.sh
     networks:
       - app-network
     depends_on:
@@ -51,6 +52,7 @@ services:
     image: phpmyadmin/phpmyadmin
     ports:
       - 8080:80
+    container_name: v3-wsl-phpmyadmin  
     environment:
       PMA_HOST: db
       # PMA_PORT: 3306
@@ -61,18 +63,19 @@ services:
       - db
     networks:
       - app-network
-    volumes:
-      - .docker/phpmyadmin/sessions:/sessions
+    # volumes:
+      # - .docker/phpmyadmin/sessions:/sessions
 
   db:
     image: mariadb:11.6
     # ports:
     #   - 3306:3306
+    container_name: v3-wsl-mariadb
     volumes:
-      - .docker/db/data:/var/lib/mysql
-      - .docker/logs:/var/log/mysql
-      - .docker/db/my.cnf:/etc/mysql/conf.d/my.cnf
-      - .docker/db/sql:/docker-entrypoint-initdb.d
+      - /home/akantahu/v3-thesis-wsl/.docker/db/data:/var/lib/mysql
+      - /home/akantahu/v3-thesis-wsl/.docker/logs:/var/log/mysql
+      - /home/akantahu/v3-thesis-wsl/.docker/db/my.cnf:/etc/mysql/conf.d/my.cnf
+      - /home/akantahu/v3-thesis-wsl/.docker/db/sql:/docker-entrypoint-initdb.d
     environment:
       MYSQL_DATABASE: rekachain_web
       MYSQL_ROOT_PASSWORD: 12345678
@@ -83,16 +86,16 @@ services:
 
   backend-simple-frs:
     build:
-      context: ./backend-simple-FRS
+      context: /home/akantahu/v3-thesis-wsl/backend-simple-FRS
       dockerfile: Dockerfile
-    container_name: backend-simple-frs
+    container_name: v3-wsl-backend-simple-frs
     # ports:
     #   - "5000:5000"
     working_dir: /app/backend-simple-FRS
     volumes:
-      - ./backend-simple-FRS:/app/backend-simple-FRS
-      - shared-data:/shared-storage
-      - deepface-cache:/root/.deepface
+      - /home/akantahu/v3-thesis-wsl/backend-simple-FRS:/app/backend-simple-FRS
+      - /home/akantahu/v3-thesis-wsl/shared-storage:/shared-storage
+      - /home/akantahu/v3-thesis-wsl/deepface-cache:/root/.deepface
     networks:
       - app-network
 

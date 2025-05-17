@@ -1,5 +1,5 @@
-APP_CONTAINER=rekachain-web
-FRS_CONTAINER=backend-simple-frs
+APP_CONTAINER=v3-wsl-rekachain-web
+FRS_CONTAINER=v3-wsl-backend-simple-frs
 
 up:
 	docker-compose up -d
@@ -7,7 +7,7 @@ up:
 
 build:
 	docker-compose build --no-cache
-
+	
 rebuild:
 	docker-compose down -v && docker-compose build --no-cache && docker-compose up -d
 
@@ -26,20 +26,29 @@ rebuild-db:
 	docker-compose up -d phpmyadmin	
 
 bash:
-	winpty docker exec -it $(APP_CONTAINER) bash
+	  docker exec -it $(APP_CONTAINER) bash
+
+fix-permission:
+	chmod +x /home/akantahu/v3-thesis-wsl/.docker/rekachain-web/wait-for-db.sh
+	chmod -R 777 /home/akantahu/v3-thesis-wsl/rekachain-web/storage
+	chmod -R 777 /home/akantahu/v3-thesis-wsl/rekachain-web/bootstrap/cache
 
 npm-build:
-	winpty docker exec -it $(APP_CONTAINER) npm install
-	winpty docker exec -it $(APP_CONTAINER) node node_modules/vite/bin/vite.js build
+	  docker exec -it $(APP_CONTAINER) npm install
+	  docker exec -it $(APP_CONTAINER) node node_modules/vite/bin/vite.js build
 
 fresh:
-	winpty docker exec -it $(APP_CONTAINER) ./wait-for-db.sh && winpty docker exec -it $(APP_CONTAINER) php artisan migrate:fresh --seed
+	  make fix-permission
+	  docker-compose exec rekachain-web composer install
+	  docker-compose exec rekachain-web cp .env.example .env
+	  docker-compose exec rekachain-web php artisan key:generate
+	  docker exec -it $(APP_CONTAINER) ./wait-for-db.sh  &&   docker exec -it $(APP_CONTAINER) php artisan migrate:fresh --seed
 
 migrate:
-	winpty docker exec -it $(APP_CONTAINER) ./wait-for-db.sh && winpty docker exec -it $(APP_CONTAINER) php artisan migrate
+	  docker exec -it $(APP_CONTAINER) ./wait-for-db.sh &&   docker exec -it $(APP_CONTAINER) php artisan migrate
 
 config-clear:
-	winpty docker exec -it $(APP_CONTAINER) php artisan config:clear && winpty docker exec -it $(APP_CONTAINER) php artisan cache:clear
+	  docker exec -it $(APP_CONTAINER) php artisan optimize:clear
 
 wipe-db:
 	rm -rf ./.docker/db/data/*
@@ -83,10 +92,17 @@ rebuild-laravel:
 	make fresh
 	make config-clear
 
-rebuild-laravel_V:
+rebuild-laravel-v:
 	make npm-build
 	make fresh
 	make config-clear
+
+rebuild-fresh-v:
+	docker-compose down
+	rm -rf /home/akantahu/v3-thesis-wsl/.docker/db/data/*
+	docker-compose up -d
+	make fresh
+	make config-clear	
 	
 
 rebuild-pma:
@@ -102,6 +118,15 @@ rebuild-all:
 	make wipe-db
 	make rebuild
 	sleep 5
+	make npm-build
+	make fresh
+	make config-clear
+
+clean:
+	make wipe-db
+	docker-compose down -v
+	docker-compose build --no-cache
+	docker-compose up -d
 	make npm-build
 	make fresh
 	make config-clear
