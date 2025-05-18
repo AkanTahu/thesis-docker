@@ -1,5 +1,5 @@
-APP_CONTAINER=v3-wsl-rekachain-web
-FRS_CONTAINER=v3-wsl-backend-simple-frs
+APP_CONTAINER=rekachain-web
+FRS_CONTAINER=python-frs
 
 up:
 	docker-compose up -d
@@ -9,7 +9,7 @@ build:
 	docker-compose build --no-cache
 	
 rebuild:
-	docker-compose down -v && docker-compose build --no-cache && docker-compose up -d
+	docker compose down -v && docker compose build --no-cache && docker compose up -d
 
 build-laravel:
 	docker-compose build rekachain-web
@@ -29,9 +29,9 @@ bash:
 	  docker exec -it $(APP_CONTAINER) bash
 
 fix-permission:
-	chmod +x /home/akantahu/v3-thesis-wsl/.docker/rekachain-web/wait-for-db.sh
-	chmod -R 777 /home/akantahu/v3-thesis-wsl/rekachain-web/storage
-	chmod -R 777 /home/akantahu/v3-thesis-wsl/rekachain-web/bootstrap/cache
+	chmod +x /home/dida/thesis-docker/.docker/rekachain-web/wait-for-db.sh
+	chmod -R 777 /home/dida/thesis-docker/rekachain-web/storage
+	chmod -R 777 /home/dida/thesis-docker/rekachain-web/bootstrap/cache
 
 npm-build:
 	  docker exec -it $(APP_CONTAINER) npm install
@@ -39,9 +39,9 @@ npm-build:
 
 fresh:
 	  make fix-permission
-	  docker-compose exec rekachain-web composer install
-	  docker-compose exec rekachain-web cp .env.example .env
-	  docker-compose exec rekachain-web php artisan key:generate
+	  docker compose exec rekachain-web composer install
+	  docker compose exec rekachain-web cp .env.example .env
+	  docker compose exec rekachain-web php artisan key:generate
 	  docker exec -it $(APP_CONTAINER) ./wait-for-db.sh  &&   docker exec -it $(APP_CONTAINER) php artisan migrate:fresh --seed
 
 migrate:
