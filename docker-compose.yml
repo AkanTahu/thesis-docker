@@ -6,7 +6,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: /home/dida/thesis-docker/shared-storage
+      device: ./shared-storage
 
   deepface-cache: #
 services:
@@ -16,9 +16,9 @@ services:
     ports:
       - "80:80"
     volumes:
-      - /home/dida/thesis-docker/nginx.conf:/etc/nginx/conf.d/default.conf
-      - /home/dida/thesis-docker/rekachain-web:/app/rekachain-web
-      - /home/dida/thesis-docker/shared-storage:/shared-storage
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./rekachain-web:/app/rekachain-web
+      - ./shared-storage:/shared-storage
     depends_on:
       - rekachain-web
       - python-frs
@@ -37,9 +37,9 @@ services:
     tty: true
     working_dir: /app/rekachain-web
     volumes:
-      - /home/dida/thesis-docker/rekachain-web:/app/rekachain-web
-      - /home/dida/thesis-docker/shared-storage:/shared-storage
-      - /home/dida/thesis-docker/.docker/rekachain-web/wait-for-db.sh:/app/rekachain-web/wait-for-db.sh
+      - ./rekachain-web:/app/rekachain-web
+      - ./shared-storage:/shared-storage
+      - ./.docker/rekachain-web/wait-for-db.sh:/app/rekachain-web/wait-for-db.sh
     networks:
       - app-network
     depends_on:
@@ -72,10 +72,10 @@ services:
     #   - 3306:3306
     container_name: mariadb
     volumes:
-      - /home/dida/thesis-docker/.docker/db/data:/var/lib/mysql
-      - /home/dida/thesis-docker/.docker/logs:/var/log/mysql
-      - /home/dida/thesis-docker/.docker/db/my.cnf:/etc/mysql/conf.d/my.cnf
-      - /home/dida/thesis-docker/.docker/db/sql:/docker-entrypoint-initdb.d
+      - ./.docker/db/data:/var/lib/mysql
+      - ./.docker/logs:/var/log/mysql
+      - ./.docker/db/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./.docker/db/sql:/docker-entrypoint-initdb.d
     environment:
       MYSQL_DATABASE: rekachain_web
       MYSQL_ROOT_PASSWORD: 12345678
@@ -93,9 +93,9 @@ services:
     #   - "5000:5000"
     working_dir: /app/python-frs
     volumes:
-      - /home/dida/thesis-docker/python-frs:/app/python-frs
-      - /home/dida/thesis-docker/shared-storage:/shared-storage
-      - /home/dida/thesis-docker/deepface-cache:/root/.deepface
+      - ./python-frs:/app/python-frs
+      - ./shared-storage:/shared-storage
+      - ./deepface-cache:/root/.deepface
     networks:
       - app-network
 
