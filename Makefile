@@ -29,9 +29,9 @@ bash:
 	  docker exec -it $(APP_CONTAINER) bash
 
 fix-permission:
-	chmod +x /home/dida/thesis-docker/.docker/rekachain-web/wait-for-db.sh
-	chmod -R 777 /home/dida/thesis-docker/rekachain-web/storage
-	chmod -R 777 /home/dida/thesis-docker/rekachain-web/bootstrap/cache
+	chmod +x /home/sel/thesis-docker/.docker/rekachain-web/wait-for-db.sh
+	chmod -R 777 /home/sel/thesis-docker/rekachain-web/storage
+	chmod -R 777 /home/sel/thesis-docker/rekachain-web/bootstrap/cache
 
 npm-build:
 	  docker exec -it $(APP_CONTAINER) npm install
