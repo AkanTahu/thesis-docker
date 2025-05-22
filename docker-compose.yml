@@ -56,7 +56,7 @@ services:
     environment:
       PMA_HOST: db
       # PMA_PORT: 3306
-      PMA_USER: dida
+      PMA_USER: root
       PMA_PASSWORD: 12345678
       PMA_ARBITRARY: 1
     depends_on:
@@ -79,7 +79,7 @@ services:
     environment:
       MYSQL_DATABASE: rekachain_web
       MYSQL_ROOT_PASSWORD: 12345678
-      MYSQL_USER: akantahu
+      MYSQL_USER: root
       MYSQL_PASSWORD: 12345678
     networks:
       - app-network
