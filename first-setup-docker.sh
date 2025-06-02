@@ -3,6 +3,7 @@ set -e
 
 # Update sistem & install git
 sudo apt update
+sudo apt install make
 sudo apt install -y git ca-certificates curl gnupg lsb-release
 
 # Tambahkan GPG key Docker
