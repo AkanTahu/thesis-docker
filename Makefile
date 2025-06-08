@@ -29,20 +29,20 @@ bash:
 	  docker exec -it $(APP_CONTAINER) bash
 
 fix-permission:
-	chmod +x .docker/rekachain-web/wait-for-db.sh
-	chmod -R 777 .docker/rekachain-web/storage
-	chmod -R 777 .docker/rekachain-web/bootstrap/cache
+	chmod +x /home/$(USER)/thesis-docker/.docker/rekachain-web/wait-for-db.sh
+	chmod -R 777 /home/$(USER)/thesis-docker/rekachain-web/storage
+	chmod -R 777 /home/$(USER)/thesis-docker/rekachain-web/bootstrap/cache
 
 npm-build:
 	  docker exec -it $(APP_CONTAINER) npm install
 	  docker exec -it $(APP_CONTAINER) node node_modules/vite/bin/vite.js build
 
 fresh:
-	  make fix-permission
 	  docker compose exec rekachain-web composer install
 	  docker compose exec rekachain-web cp .env.example .env
 	  docker compose exec rekachain-web php artisan key:generate
 	  docker exec -it $(APP_CONTAINER) ./wait-for-db.sh  &&   docker exec -it $(APP_CONTAINER) php artisan migrate:fresh --seed
+	  make fix-permission
 
 migrate:
 	  docker exec -it $(APP_CONTAINER) ./wait-for-db.sh &&   docker exec -it $(APP_CONTAINER) php artisan migrate
