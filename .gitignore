@@ -1,9 +1,11 @@
 /python-frs
 /rekachain-web
-/shared-storage/dataset_faces/*
-/shared-storage/result_scan_faces/*
+# /shared-storage/dataset_faces/*
+# /shared-storage/result_scan_faces/*
 !/shared-storage/dataset_faces/.gitkeep
 !/shared-storage/result_scan_faces/.gitkeep
+# !/shared-storage/result_scan_faces/144/.gitkeep
+# !/shared-storage/result_scan_faces/144/144_20250622_022120.jpg
 .swp
 .docker/db/
 .docker/logs/
